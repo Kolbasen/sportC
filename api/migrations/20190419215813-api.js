@@ -16,7 +16,7 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function (db) {
   return db.createTable('auth', {
-    id: { type: 'int', primaryKey: true },
+    id: 'serial primary key',
     login: 'text',
     password: 'text',
     salt: 'text'
