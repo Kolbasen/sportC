@@ -1,7 +1,11 @@
+const express = require('express')
 const crypto = require('crypto');
 const db = require('./db');
+const jwt = require('jsonwebtoken');
 const take = db.take;
 const insert = db.insert;
+const secret = require('./config.json');
+//const app = require('./app')
 
  function validPassword(login, password) {
      return new Promise((resolve, reject)=> {
@@ -42,7 +46,8 @@ function authenticate(req, res) {
             validPassword(login, passwd)
             .then(result1 => {
                 if (result1) {
-                res.send("Success!");
+                    const token = jwt.sign("andrew", secret.toString());
+                    res.sendStatus(200).redirect('http://localhost:9000/');
             } else {
                 res.send("Incorrect password!");
             }   
