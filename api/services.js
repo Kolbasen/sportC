@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 const db = require('./db');
+const jwt = require('jsonwebtoken')
+const config = require('./config')
 const take = db.take;
 const insert = db.insert;
 
@@ -42,7 +44,8 @@ function authenticate(req, res) {
             validPassword(login, passwd)
             .then(result1 => {
                 if (result1) {
-                res.send("Success!");
+                const token = jwt.sign({login: login}, config.secret.toString());
+                res.status(200).json(token);
             } else {
                 res.send("Incorrect password!");
             }   
