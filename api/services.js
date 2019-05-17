@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const take = db.take;
 const insert = db.insert;
 const secret = require('./config.json');
-//const app = require('./app')
 
  function validPassword(login, password) {
      return new Promise((resolve, reject)=> {
@@ -47,7 +46,7 @@ function authenticate(req, res) {
             .then(result1 => {
                 if (result1) {
                     const token = jwt.sign("andrew", secret.toString());
-                    res.sendStatus(200).redirect('http://localhost:9000/');
+                    res.status(200).json(token)
             } else {
                 res.send("Incorrect password!");
             }   
