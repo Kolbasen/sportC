@@ -1,3 +1,3 @@
 {
-  "dev": "postgresql://andrew:1234@localhost:5432/website"  
+  "dev": "postgresql://yaroslav:1234@localhost:5432/website"  
 }
