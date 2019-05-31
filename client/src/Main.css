@@ -1,0 +1,15 @@
+
+h1 {
+  text-align: center;
+}
+
+.rightButton {
+  text-align: right;
+  padding-top: 0px;
+  margin-top: -10px;
+  
+}
+
+.leftButton {
+  text-align: left
+}

@@ -1,9 +1,11 @@
+const express = require('express')
 const crypto = require('crypto');
 const db = require('./db');
 const jwt = require('jsonwebtoken')
 const config = require('./config')
 const take = db.take;
 const insert = db.insert;
+const secret = require('./config.json');
 
  function validPassword(login, password) {
      return new Promise((resolve, reject)=> {
