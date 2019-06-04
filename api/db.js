@@ -8,17 +8,28 @@ const pool = new Pool({
   port: 5432,
 })
 
-function take(login) {
+function take(login, table) {
     return new Promise((resolve, reject) => {
-    const userData = pool.query('SELECT * FROM auth WHERE login=$1', [login]);
+    const userData = pool.query(`SELECT * FROM ${table} WHERE login=$1`, [login]);
     resolve(userData);
    })
   }
   
-  function insert(login, password, salt) {
+  function insertPasswd(login, password, salt) {
     return new Promise((resolve, reject) => {
-      const newUserData = pool.query('INSERT INTO auth (login, password, salt) values($1, $2, $3)', [login, password, salt]);
+      const newUserData = pool.query(`INSERT INTO auth (login, password, salt) values($1, $2, $3)`, [login, password, salt]);
       resolve(newUserData);
+    })
+  }
+
+  function insertInfo(UserInfo) {
+    arr = []
+    for (key in UserInfo) {
+      arr.push(UserInfo[key]);
+    }
+    return new Promise((resolve, reject) => {
+      const newUserInfo = pool.query(`INSERT INTO info (login, name, surname, age, city, info, drink1, drink2, drink3) values($1, $2, $3, $4, $5, $6, $7, $8, $9)`,arr);
+      resolve(newUserInfo);
     })
   }
 //   Waiting for the future
@@ -33,5 +44,6 @@ function take(login) {
 module.exports = {
     take,
     //update,
-    insert
+    insertPasswd,
+    insertInfo
 }

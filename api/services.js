@@ -1,15 +1,16 @@
 const express = require('express')
 const crypto = require('crypto');
-const db = require('./db');
+const {take, insertPasswd, insertInfo} = require('./db');
 const jwt = require('jsonwebtoken')
 const config = require('./config')
-const take = db.take;
-const insert = db.insert;
+const multer = require('multer');
 const secret = require('./config.json');
+
+
 
  function validPassword(login, password) {
      return new Promise((resolve, reject)=> {
-        take(login)
+        take(login, "auth")
         .then(res => {
             let salt = res.rows[0].salt.toString('hex');
            const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, `sha256`).toString(`hex`);
@@ -28,7 +29,7 @@ const secret = require('./config.json');
         const salt = crypto.randomBytes(16).toString('hex');  
         const hash1  = crypto.pbkdf2Sync(password, salt,  
         1000, 64, `sha256`).toString(`hex`); 
-        insert(login, hash1, salt)
+        insertPasswd(login, hash1, salt)
         .then(res => {
             console.log(1);
             resolve(true);
@@ -40,7 +41,8 @@ const secret = require('./config.json');
 
 function authenticate(req, res) {
     const {login, passwd} = req.body;
-    take(login)
+    console.log(login, passwd);
+    take(login, "auth")
     .then(result => {
         if (result.rows.length != 0) {
             validPassword(login, passwd)
@@ -49,11 +51,11 @@ function authenticate(req, res) {
                 const token = jwt.sign({login: login}, config.secret.toString());
                 res.status(200).json(token);
             } else {
-                res.send("Incorrect password!");
+                res.status(401).send("Incorrect password!");
             }   
             })
         } else {
-           res.send("No user found");
+           res.status(401).send("No user found");
         }
     })
     .catch(err => res.send(err));
@@ -61,13 +63,13 @@ function authenticate(req, res) {
 
 function register(req, res) {
     const {login, passwd} = req.body;
-    take(login)
+    take(login, "auth")
     .then(result => {
         if (result.rows.length == 0) {
             setPassword(login, passwd)
             .then(result1 => {
                 if (result1) {
-                    res.send("Success!");
+                    res.status(200).send("Successfull registration!");
                 } else {
                     res.send("Ooop smth went wrong")
                 }
@@ -79,10 +81,23 @@ function register(req, res) {
     .catch(err => res.send(err));
 }
 
+function nextstepreg(req, res) {
+    console.log(Math.random())
+    console.log(req.body)
+    console.log(JSON.parse(req.body.info))
+    console.log(req.file)
+    insertInfo(JSON.parse(req.body.info))
+    .then(res => console.log(true))
+    .then(res1 => res.send("Info added"))
+    .catch(err => console.log(err))
+    //res.json(1)
+}
+
 
 module.exports = {
     authenticate,
-    register
+    register,
+    nextstepreg
 }
 
 

@@ -1,6 +1,8 @@
 import React, {Component } from 'react'
 // import './Main.css'
 import AlcoList from './AlcoList'
+import {Redirect, Link} from 'react-router-dom'
+import {getJWT, setJWT, confirmJWT, removeJWT, decodeJWT} from "./tokenHelpers"
 
 class Main extends Component {
 
@@ -22,6 +24,11 @@ class Main extends Component {
  
   render() {
     const list = [1,2,3,4];
+    //console.log(getJWT())
+    //console.log(decodeJWT().login)
+    if (!getJWT()) {
+      return <Redirect to="/auth"/>      
+    }    
     return (
       <div>  
         <h1>Some shit</h1>
