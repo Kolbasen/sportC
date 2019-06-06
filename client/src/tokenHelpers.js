@@ -1,7 +1,4 @@
 import jwt from "jsonwebtoken"
-import React from 'react';
-import {Redirect} from 'react-router-dom'
-
 
 function getJWT() {
     return sessionStorage.getItem("idToken")

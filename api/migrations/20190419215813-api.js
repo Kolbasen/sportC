@@ -1,8 +1,8 @@
 'use strict';
 
-var dbm;
-var type;
-var seed;
+let dbm;
+let type;
+let seed;
 
 /**
   * We receive the dbmigrate dependency from dbmigrate initially.
@@ -14,55 +14,51 @@ exports.setup = function(options, seedLink) {
   seed = seedLink;
 };
 
-exports.up = function (db) {
-    return db.createTable('auth', {
+exports.up = function(db) {
+  return db.createTable('auth', {
     id: 'serial primary key',
     login: 'text',
     password: 'text',
     salt: 'text'
   })
-  .then(
-    function(result) {
-      db.createTable('info', {
-        id: 'serial primary key',
-        login: 'text',
-        name: 'text',
-        surname: 'text',
-        age: 'int',
-        city: 'text',
-        info: 'text',
-        drink1: 'text',
-        drink2: 'text',
-        drink3: 'text'
-      });
-    }, 
-    function(err) {
-      return;
-    }
-  );
-    // db.createTable('info', {
-    //   //id: 'serial primary key',
-    //   login:'text',
-    //   info: 'text',
-    //   alco1: 'text',
-    //   alco2: 'text',
-    //   alco3: 'text',
-    // })
-    
+    .then(
+      (result) => {
+        db.createTable('info', {
+          id: 'serial primary key',
+          login: 'text',
+          name: 'text',
+          surname: 'text',
+          age: 'int',
+          city: 'text',
+          info: 'text',
+          drink1: 'text',
+          drink2: 'text',
+          drink3: 'text'
+        });
+      },
+      err => {}
+    );
+  // db.createTable('info', {
+  //   //id: 'serial primary key',
+  //   login:'text',
+  //   info: 'text',
+  //   alco1: 'text',
+  //   alco2: 'text',
+  //   alco3: 'text',
+  // })
+
 };
 
-exports.down = function (db) {
+exports.down = function(db) {
   return db.dropTable('auth')
-  .then(
-    function(result) {
-      db.dropTable('info');
-    },
-    function(err) {
-      return;
-    }
-  )
+    .then(
+      (result) => {
+        db.dropTable('info');
+      },
+      err => {}
+    );
 };
 
 exports._meta = {
-  "version": 1
+  'version': 1
 };

@@ -12,11 +12,10 @@ class App extends Component {
       login: "",
       passwd: "", 
       redirect: false
-  };
-  this.onChange = this.onChange.bind(this);
-  this.handleSubmit = this.handleSubmit.bind(this);
-}
-
+      };
+    this.onChange = this.onChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 handleSubmit(e) {
   e.preventDefault();
   console.log(this.state)
