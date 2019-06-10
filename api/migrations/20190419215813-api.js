@@ -33,13 +33,35 @@ exports.up = function (db) {
         info: 'text',
         drink1: 'text',
         drink2: 'text',
-        drink3: 'text'
+        drink3: 'text',
+        avatar: 'text'
       });
-    }, 
-    function(err) {
-      return;
-    }
-  );
+    })
+    .then(
+      function(result) {
+        db.createTable('results', {
+          id: 'serial primary key',
+          login: 'text',
+          seen: 'text',
+          accepted: 'text',
+          likedby: 'text'
+        })
+      }
+    )
+    .then(
+      function(result) {
+        db.createTable('amount', {
+          amount: {
+            type: 'bigint',
+            default: 0
+          }
+        }, 
+        function(err) {
+          return;
+        }
+        )
+      }
+    )
     // db.createTable('info', {
     //   //id: 'serial primary key',
     //   login:'text',
@@ -56,11 +78,19 @@ exports.down = function (db) {
   .then(
     function(result) {
       db.dropTable('info');
-    },
-    function(err) {
-      return;
-    }
-  )
+    })
+    .then(
+      function(result){
+      db.dropTable('results')
+    }) 
+    .then(
+      function(result) {
+        db.dropTable('amount');
+      }, 
+      function(err) {
+        return;
+      }
+    )
 };
 
 exports._meta = {

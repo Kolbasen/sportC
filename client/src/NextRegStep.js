@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ava from './ava.jpg'
 import {Redirect, Link} from 'react-router-dom'
 import axios from "axios";
 import qs from 'qs'
@@ -17,7 +16,7 @@ class NextRegStep extends Component {
             drink1: "",
             drink2: "",
             drink3: "",
-            file: null
+            file: null,
         }
         this.onChange = this.onChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -31,13 +30,16 @@ class NextRegStep extends Component {
     onFileChange(e) {
       console.log(e.target.files[0]);
       this.setState({file: e.target.files[0] }, function () {
+        //this.setState({ava: this.state.file.name})
+        console.log(this.state)
         console.log(this.state.file)})
       //console.log(this.state.file)
     }
 
     handleSubmit(e) {
         e.preventDefault();
-        console.log(this.state)
+        console.log(this.state.file.name)
+        
         const information = {
             login: this.props.location.state.login,
             name: this.state.name,
@@ -68,6 +70,7 @@ class NextRegStep extends Component {
 
           //  function sendImage() {
              axios.post('http://localhost:9000/nextstepreg', formData)
+             .then(res => console.log(res))
              .then(res => this.setState({redirect:true}))
           //}
 
@@ -95,7 +98,7 @@ class NextRegStep extends Component {
         return (
             
             <div>
-                {/* <img src={ava} alt="Logo"/> */}
+                
               <form onSubmit={this.handleSubmit} encType="multipart/form-data">
                 <p>Name</p>
                 <input type="text"  value={this.state.name} name="name" onChange = {this.onChange}/>
@@ -112,7 +115,7 @@ class NextRegStep extends Component {
                     <option>Lviv</option>
                 </select>
                 <p>Some information about yourself</p>
-                <textarea  maxLength="10" rows="10" cols="45" name="info"  value={this.state.info} onChange = {this.onChange}></textarea>
+                <textarea  maxLength="50" rows="10" cols="45" name="info"  value={this.state.info} onChange = {this.onChange}></textarea>
                 <p>Your favourite drinks</p>
                 <input  type="text" value={this.state.drink1} name="drink1" onChange = {this.onChange}/>
                 <input  type="text" value={this.state.drink2} name="drink2" onChange = {this.onChange}/>

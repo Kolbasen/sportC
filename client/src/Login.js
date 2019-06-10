@@ -5,7 +5,7 @@ import qs from 'qs'
 import {getJWT, setJWT, confirmJWT, removeJWT} from "./tokenHelpers"
 import {Redirect, Link} from 'react-router-dom'
 
-class App extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = { 
@@ -63,4 +63,4 @@ onChange(e) {
   }
 }
 
-export default App;
+export default Login;

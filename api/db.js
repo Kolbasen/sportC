@@ -9,11 +9,18 @@ const pool = new Pool({
 })
 
 function take(login, table) {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const userData = pool.query(`SELECT * FROM ${table} WHERE login=$1`, [login]);
     resolve(userData);
-   })
-  }
+  })
+}
+
+function takeId(id, table) {
+  return new Promise((resolve, reject) => {
+    const userData = pool.query(`SELECT * FROM ${table} WHERE id=$1`, [id]);
+    resolve(userData);
+  })
+}
   
   function insertPasswd(login, password, salt) {
     return new Promise((resolve, reject) => {
@@ -28,22 +35,47 @@ function take(login, table) {
       arr.push(UserInfo[key]);
     }
     return new Promise((resolve, reject) => {
-      const newUserInfo = pool.query(`INSERT INTO info (login, name, surname, age, city, info, drink1, drink2, drink3) values($1, $2, $3, $4, $5, $6, $7, $8, $9)`,arr);
+      const newUserInfo = pool.query(`INSERT INTO info (login, name, surname, age, city, info, drink1, drink2, drink3, avatar) values($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)`,arr);
       resolve(newUserInfo);
     })
   }
-//   Waiting for the future
-  /*function update(chat, tag) {
-    return new Promise((resolve, reject) => {
-     const updateTag = pool.query('UPDATE tags SET amount = amount+1 WHERE chatid = $1 AND name = $2', [chatId, tag]);
-     resolve(updateTag);
-   })
+
+  function increaseCounter() {
+    return new Promise((resolve, rej) => {
+       pool.query('UPDATE amount SET amount = amount + 1')
+       resolve(true)
+    })
   }
-*/
+
+  function selectCounter() {
+    return new Promise((resolve, rej) => {
+        const counter= pool.query('SELECT amount FROM amount')
+        resolve(counter)
+    }) 
+}
+
+function updateSeen(seen, id) {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE results SET seen = $1 WHERE id = $2`, [seen, id])    
+    resolve(true)
+  })
+}
+
+function updateLikedby(likedby, id) {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE results SET likedby = $1 WHERE id = $2`, [likedby, id])    
+    resolve(true)
+  })
+}
 
 module.exports = {
     take,
     //update,
     insertPasswd,
-    insertInfo
+    insertInfo,
+    selectCounter,
+    increaseCounter,
+    takeId,
+    updateSeen,
+    updateLikedby
 }

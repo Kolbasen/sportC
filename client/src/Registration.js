@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from "axios";
 import qs from 'qs'
-import {getJWT, setJWT, confirmJWT, removeJWT} from "./tokenHelpers"
+import {getJWT, setJWT, confirmJWT, removeJWT} from "./tokenHelpers.js"
 import {Redirect, Link} from 'react-router-dom'
 
 class Registration extends Component {
@@ -67,7 +67,9 @@ class Registration extends Component {
               <input type="password" required placeholder="Confirm Password" value={this.state.confirmPasswd} name="confirmPasswd" onChange = {this.onChange}/>
               
               <input type="submit"  value="Register"/>
-            </form>    
+            </form>   
+            <p>Already have an account?</p>
+            <Link to="/auth">Click Here</Link> 
           </div>
         );
       }

@@ -6,6 +6,7 @@ import Login from './Login';
 import Main from './Main'
 import Registration from './Registration'
 import NextRegStep from './NextRegStep'
+import ProfilePage from './ProfilePage';
 
 ReactDOM.render((
     <Router>
@@ -14,6 +15,7 @@ ReactDOM.render((
         {/*<Route path='*' component={Login} />*/}
         <Route path = '/registration' component = {Registration}/>
         <Route path ='/nextstepreg' component ={NextRegStep}/>
+        <Route path='/profile' component={ProfilePage}/>
     </Router>
     ), document.getElementById('root'));
 
