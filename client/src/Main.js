@@ -1,10 +1,8 @@
 import React, {Component } from 'react'
-// import './Main.css'
-import AlcoList from './AlcoList'
 import {Redirect, Link} from 'react-router-dom'
 import qs from 'qs'
 import axios from "axios"
-import {getJWT, setJWT, confirmJWT, removeJWT, decodeJWT} from "./tokenHelpers"
+import {getJWT,  decodeJWT} from "./tokenHelpers"
 import Profile from './Profile';
 
 class Main extends Component {
@@ -14,8 +12,8 @@ class Main extends Component {
       login: "",
       loading: true,
       avatar: null,
-      dataCame: false
-      //users: [{"loging":1, "name": 2 }, {"shit": 1, "u": 2}]
+      dataCame: false,
+      left: true
     }
     this.onSubmit = this.onSubmit.bind(this)
     this.handleStart = this.handleStart.bind(this)
@@ -25,23 +23,43 @@ class Main extends Component {
     this.setState({loading: false})
   }
   
-  onSubmit = (event) => {
-    event.preventDefault()
+  onSubmit(e) {
+    e.preventDefault() 
     this.setState({loading: true})
-    console.log(event.target.value)
     axios({
       url:'http://localhost:9000/',
       method:"POST",
-      headers: {'Content-Type':'application/x-www-form-urlencoded', "Accept" : "application/json"},
-      data: qs.stringify({"id": decodeJWT().id, "target": this.state.id})
+      headers: {
+      'Content-Type':'application/x-www-form-urlencoded',
+      "Accept" : "application/json"
+    },
+      data: qs.stringify({
+        "id": decodeJWT().id,
+        "target": this.state.id,
+        "action": e.target.value
+      })
     })
     .then(res=> {
+      //console.log(typeof res.data )
       console.log(res)
-      for (let key in res.data) {
-        this.setState({ 
-          [key] : res.data[key]
-        })
+      console.log(Object.keys(res.data).length)
+      if (Object.keys(res.data).length === 1) {
+        console.log(res.data.first)
+        for (let key in res.data.first) {
+          this.setState({ 
+            [key] : res.data.first[key]
+          })
+        }
+      } else {
+        for (let key in res.data.first) {
+          this.setState({ 
+            [key] : res.data.first[key]
+          })
+        }
+        console.log(res.data.second)
+        console.log(true)
       }
+      
       this.setState({loading: false})
     }) 
     
@@ -58,41 +76,64 @@ class Main extends Component {
     })
     .then(res => {
       console.log(res.data)
-      for (let key in res.data) {
-        this.setState({ 
-          [key] : res.data[key]
-        })
+      console.log(Object.keys(res.data).length)
+      if (Object.keys(res.data).length === 1) {
+        console.log(res.data.first)
+        for (let key in res.data.first) {
+          this.setState({ 
+            [key] : res.data.first[key]
+          })
+        }
+      } else {
+        for (let key in res.data.first) {
+          this.setState({ 
+            [key] : res.data.first[key]
+          })
+        }
+        console.log(res.data.second)
+        console.log(true)
       }
       this.setState({loading: false})
-      this.setState({dataCame: true})
+      
       console.log(this.state)
   })
+  .then(res => this.setState({dataCame: true}))
 
   }
 
   render() {
-    const list = [1,2,3,4];
-    
     if (!getJWT()) {
       return <Redirect to="/auth"/>      
-    } else {
-      console.log(getJWT())
-      console.log(decodeJWT())
-    }
+    } 
     if (this.state.loading) {
       return <h1>Loading</h1>
     } else {
       if (this.state.dataCame) {
-        return (
-          <div>
-            <Link to="/profile">
-              <input type="submit" value="To profile"/>
-            </Link>
-            <input  type="submit" onClick={this.onSubmit} value='Approve'/>
-            <input type="submit" onClick={this.onSubmit} value='Decline'/>
-            <Profile user={this.state}/>
-          </div>
-        );
+        if (this.state.left) {
+          return (
+            <div>
+              <Link to="/profile">
+                <input type="submit" value="To profile"/>
+              </Link>
+              <input  type="submit" onClick={this.onSubmit} value='Approve'/>
+              <input type="submit" onClick={this.onSubmit} value='Decline'/>
+              <Profile user={this.state}/>
+            </div>
+          );
+        } else {
+          return(
+            <div>
+              <Link to="/profile">
+                <input type="submit" value="To profile"/>
+              </Link>
+              <Link to="/">
+                <input type="submit" value="To Begin"/>
+              </Link>
+              <h1>No more users left</h1>
+            </div>
+          );
+        }
+        
       } else {
         return (
           <div>  
@@ -100,8 +141,7 @@ class Main extends Component {
               <input type="submit" value="To profile"/>
             </Link>
             <button size="lg" onClick={this.handleStart}>Let's Start</button>
-            <h1>Some shit</h1>
-            <AlcoList list={list} />
+            <h1>Press Lets start to begin!</h1>
   
         </div>
         );

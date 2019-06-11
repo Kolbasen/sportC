@@ -45,9 +45,10 @@ class ProfilePage extends Component {
             [key] : res.data[key]
           })
         }
-        this.setState({loading: false})
+        
         console.log(this.state)
     })
+    .then(res => this.setState({loading: false}))
   }   
   
 

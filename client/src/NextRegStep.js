@@ -52,6 +52,12 @@ class NextRegStep extends Component {
             drink3: this.state.drink3,
           }  
 
+          // for (let key in this.state) {
+          //   if (key !== "file") {
+          //     information[key] = this.state[key]
+          //   }
+          // }
+
            const formData = new FormData();
           // console.log(this.state.file)
            formData.append('avatar',this.state.file, this.state.file.name);

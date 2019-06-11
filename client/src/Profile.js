@@ -6,9 +6,10 @@ import AlcoList from './AlcoList'
 
 
 function Profile(props) {
+  console.log(props.user)
       return (
         <div>  
-          <img src={require(`./public/uploads/${props.user.avatar}`)} width="100" height="100"/>
+          <img src={require(`./public/uploads/${props.user.avatar}`)} width="100" height="100" alt=""/>
           <p>Login</p>
           <p>{props.user.login}</p>
           <p>Name</p>
