@@ -17,30 +17,23 @@ const storage = multer.diskStorage({
   }
 });
 
-// const fileFilter = (req, file, cb) => {
-//   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-//     cb(null, true);
-//   } else {
-//     cb(null, false);
-//   }
-// };
-
 const upload = multer({
   storage,
   limits: {
     fileSize: 1024 * 1024 * 10
   },
-  //fileFilter: fileFilter
 });
 
 
 
 function validPassword(login, password) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     take(login, 'auth')
       .then(res => {
         const salt = res.rows[0].salt.toString('hex');
-        const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha256').toString('hex');
+        const hash = crypto.pbkdf2Sync(
+          password, salt, 1000, 64, 'sha256')
+          .toString('hex');
         if (res.rows[0].password === hash) {
           resolve(true);
         } else {
@@ -52,12 +45,12 @@ function validPassword(login, password) {
 }
 
 function setPassword(login, password) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash1  = crypto.pbkdf2Sync(password, salt,
       1000, 64, 'sha256').toString('hex');
     insertPasswd(login, hash1, salt)
-      .then(res => {
+      .then(() => {
         resolve(true);
       })
       .catch(err => console.log(err));
@@ -69,11 +62,14 @@ function authenticate(req, res) {
   const { login, passwd } = req.body;
   take(login, 'auth')
     .then(result => {
-      if (result.rows.length != 0) {
+      if (result.rows.length !== 0) {
         validPassword(login, passwd)
-          .then(result1 => {
-            if (result1) {
-              const token = jwt.sign({ login, id: result.rows[0].id }, config.secret.toString());
+          .then(idInfo => {
+            if (idInfo) {
+              const token = jwt.sign(
+                { login, id: result.rows[0].id },
+                config.secret.toString()
+              );
               res.status(200).json(token);
             } else {
               res.status(401).send('Incorrect password!');
@@ -90,11 +86,11 @@ function register(req, res) {
   const { login, passwd } = req.body;
   take(login, 'auth')
     .then(result => {
-      if (result.rows.length == 0) {
+      if (result.rows.length === 0) {
         setPassword(login, passwd)
-          .then(result1 => {
+          .then(idInfo => {
 
-            if (result1) {
+            if (idInfo) {
               res.status(200).send('Successfull registration!');
             } else {
               res.send('Ooop smth went wrong');
@@ -112,8 +108,8 @@ function nextstepreg(req, result) {
   info.ava = req.file.originalname;
   info.age = Number(info.age);
   insertInfo(info)
-    .then(res => increaseCounter()
-      .then(res1 => result.send('Info added')))
+    .then(() => increaseCounter()
+      .then(() => result.send('Info added')))
     .catch(err => console.log(err));
   //res.json(1)
 }
@@ -128,25 +124,24 @@ function getAnotherProfile(req, res) {
   selectCounter()
     .then(result => {
       takeId(req.body.id, 'results')
-        .then(result1 => {
-          //console.log(result1)
+        .then(idInfo => {
           if (req.body.target) {
-            select(req, res, result, result1);
+            select(req, res, result, idInfo);
           } else {
-            start(result, result1, res);
+            start(result, idInfo, res);
           }
         });
     });
 }
 
-function start(result, result1, res) {
+function start(result, idInfo, res) {
   const id = [];
   const { amount } = result.rows[0];
   for (let i = 1; i <= amount; i++) {
     id.push(i);
   }
-  const seen = result1.rows[0].seen.split(',');
-  seen.push(result1.rows[0].id);
+  const seen = idInfo.rows[0].seen.split(',');
+  seen.push(idInfo.rows[0].id);
   for (let i = 0; i < id.length; i++) {
     for (let j = 0; j < seen.length; j++) {
       if (id[i] === +seen[j]) {
@@ -166,27 +161,27 @@ function start(result, result1, res) {
   }
 }
 
-function select(req, res, result, result1) {
-  const likedby = `${result1.rows[0].likedby},${req.body.id}`;
-  const seen = `${result1.rows[0].seen},${req.body.target}`;
+function select(req, res, result, idInfo) {
+  const likedby = `${idInfo.rows[0].likedby},${req.body.id}`;
+  const seen = `${idInfo.rows[0].seen},${req.body.target}`;
   updateSeen(seen, req.body.id)
     .then(() => {
       if (req.body.action === 'Approve') {
         updateLikedby(likedby, req.body.target)
           .then(() => {
-            newPerson(req, res, result, result1);
+            newPerson(req, res, result);
           });
       } else {
-        newPerson(req, res, result, result1);
+        newPerson(req, res, result);
       }
 
     });
 }
 
-function newPerson(req, res, result, result1) {
+function newPerson(req, res, result) {
   takeId(req.body.id, 'results')
     .then(info => {
-      if (info.rows[0].likedby == 0) {
+      if (+info.rows[0].likedby === 0) {
         start(result, info, res);
       } else {
         const curr = info.rows[0].likedby.split(',').splice(0, 1);
@@ -199,11 +194,6 @@ function newPerson(req, res, result, result1) {
     });
 }
 
-// function checkLike(req, res) {
-//   console.log(1);
-//   res.send(true);
-//   next();
-// }
 
 module.exports = {
   upload,
