@@ -9,6 +9,7 @@ const config = require('./config');
 const multer = require('multer');
 
 
+
 const storage = multer.diskStorage({
   destination: '../client/src/public/uploads/',
   filename(req, file, cb) {
@@ -16,24 +17,30 @@ const storage = multer.diskStorage({
   }
 });
 
+// const fileFilter = (req, file, cb) => {
+//   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+//     cb(null, true);
+//   } else {
+//     cb(null, false);
+//   }
+// };
+
 const upload = multer({
   storage,
   limits: {
     fileSize: 1024 * 1024 * 10
   },
+  //fileFilter: fileFilter
 });
 
 
 
 function validPassword(login, password) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     take(login, 'auth')
       .then(res => {
         const salt = res.rows[0].salt.toString('hex');
-        const hash = crypto.pbkdf2Sync(
-          password, salt, 1000, 64, 'sha256'
-        )
-          .toString('hex');
+        const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha256').toString('hex');
         if (res.rows[0].password === hash) {
           resolve(true);
         } else {
@@ -45,12 +52,12 @@ function validPassword(login, password) {
 }
 
 function setPassword(login, password) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash1  = crypto.pbkdf2Sync(password, salt,
       1000, 64, 'sha256').toString('hex');
     insertPasswd(login, hash1, salt)
-      .then(() => {
+      .then(res => {
         resolve(true);
       })
       .catch(err => console.log(err));
@@ -62,14 +69,11 @@ function authenticate(req, res) {
   const { login, passwd } = req.body;
   take(login, 'auth')
     .then(result => {
-      if (result.rows.length !== 0) {
+      if (result.rows.length != 0) {
         validPassword(login, passwd)
           .then(result1 => {
             if (result1) {
-              const token = jwt.sign({
-                login,
-                id: result.rows[0].id
-              }, config.secret.toString());
+              const token = jwt.sign({ login, id: result.rows[0].id }, config.secret.toString());
               res.status(200).json(token);
             } else {
               res.status(401).send('Incorrect password!');
@@ -86,7 +90,7 @@ function register(req, res) {
   const { login, passwd } = req.body;
   take(login, 'auth')
     .then(result => {
-      if (result.rows.length === 0) {
+      if (result.rows.length == 0) {
         setPassword(login, passwd)
           .then(result1 => {
 
@@ -108,8 +112,8 @@ function nextstepreg(req, result) {
   info.ava = req.file.originalname;
   info.age = Number(info.age);
   insertInfo(info)
-    .then(() => increaseCounter()
-      .then(() => result.send('Info added')))
+    .then(res => increaseCounter()
+      .then(res1 => result.send('Info added')))
     .catch(err => console.log(err));
   //res.json(1)
 }
@@ -125,6 +129,7 @@ function getAnotherProfile(req, res) {
     .then(result => {
       takeId(req.body.id, 'results')
         .then(result1 => {
+          //console.log(result1)
           if (req.body.target) {
             select(req, res, result, result1);
           } else {
@@ -178,10 +183,10 @@ function select(req, res, result, result1) {
     });
 }
 
-function newPerson(req, res, result) {
+function newPerson(req, res, result, result1) {
   takeId(req.body.id, 'results')
     .then(info => {
-      if (info.rows[0].likedby === 0) {
+      if (info.rows[0].likedby == 0) {
         start(result, info, res);
       } else {
         const curr = info.rows[0].likedby.split(',').splice(0, 1);
@@ -195,6 +200,7 @@ function newPerson(req, res, result) {
 }
 
 // function checkLike(req, res) {
+//   console.log(1);
 //   res.send(true);
 //   next();
 // }
@@ -206,7 +212,6 @@ module.exports = {
   nextstepreg,
   getProfile,
   getAnotherProfile,
-  //checkLike
 };
 
 
