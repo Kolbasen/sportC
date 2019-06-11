@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import {Redirect, Link} from 'react-router-dom'
-import axios from "axios";
-import qs from 'qs'
 
 class NextRegStep extends Component {
     constructor(props) {
@@ -41,58 +39,27 @@ class NextRegStep extends Component {
         console.log(this.state.file.name)
         
         const information = {
-            login: this.props.location.state.login,
-            name: this.state.name,
-            surname: this.state.surname,
-            age: this.state.age,
-            city: this.state.city,
-            info: this.state.info,
-            drink1: this.state.drink1,
-            drink2: this.state.drink2,
-            drink3: this.state.drink3,
+  
           }  
 
-          // for (let key in this.state) {
-          //   if (key !== "file") {
-          //     information[key] = this.state[key]
-          //   }
-          // }
+          for (let key in this.state) {
+            if (key !== "file") {
+              information[key] = this.state[key]
+            }
+          }
 
            const formData = new FormData();
-          // console.log(this.state.file)
            formData.append('avatar',this.state.file, this.state.file.name);
            formData.append('info', JSON.stringify(information))
            console.log(formData.get('avatar'));
-          //console.log(formData);
-          // function sendInfo() {
-          //   axios({
-          //     method: 'post',
-          //     url: 'http://localhost:9000/nextstepreg',
-          //     //headers: {'Content-Type':'multipart/form-data', "Accept" : "application/json"},
-          //     data: formData, //qs.stringify(information)
-          //     data: qs.stringify(information)
-          //   })
-          // }
-
-          //  function sendImage() {
-             axios.post('http://localhost:9000/nextstepreg', formData)
+  
+             fetch({
+               url: 'http://localhost:9000/nextstepreg',
+               method: 'POST',
+               formData
+              })
              .then(res => console.log(res))
              .then(res => this.setState({redirect:true}))
-          //}
-
-          // axios.all([sendImage(), sendInfo()])
-          // .then(res => console.log(true))
-
-          
-          //  
-          // .then(res => axios.post({
-          //     method: 'post',
-          //     url: 'http://localhost:9000/nextstepreg',
-          //     //headers: {'Content-Type':'multipart/form-data', "Accept" : "application/json"},
-          //     //data: qs.stringify(information)
-          //   })
-          //   
-          
     }
 
     render() {

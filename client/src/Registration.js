@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import axios from "axios";
-import qs from 'qs'
-import {getJWT, setJWT, confirmJWT, removeJWT} from "./tokenHelpers.js"
 import {Redirect, Link} from 'react-router-dom'
 
 class Registration extends Component {
@@ -29,11 +26,11 @@ class Registration extends Component {
             passwd: this.state.passwd
         }
         if (this.state.passwd === this.state.confirmPasswd) {
-          axios({
+          fetch({
             method: 'post',
             url: 'http://localhost:9000/register',
             headers: {'Content-Type':'application/x-www-form-urlencoded', "Accept" : "application/json"},
-            data: qs.stringify(user)
+            data: JSON.stringify(user)
           })
           .then(res => console.log(res))
           .then(res => this.setState({redirect: true}))

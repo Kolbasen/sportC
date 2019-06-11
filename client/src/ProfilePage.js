@@ -32,7 +32,7 @@ class ProfilePage extends Component {
 
   componentWillMount() {
       //this.fetchUsers();
-      axios({
+      fetch({
         url:'http://localhost:9000/profile',
         method:"POST",
         headers: {'Content-Type':'application/x-www-form-urlencoded', "Accept" : "application/json"},
@@ -51,10 +51,6 @@ class ProfilePage extends Component {
     .then(res => this.setState({loading: false}))
   }   
   
-
-  onSubmit = (e) => {
-    
-  }
 
   render() {
     console.log(this.state)

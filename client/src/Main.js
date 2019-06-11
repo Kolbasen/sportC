@@ -26,7 +26,7 @@ class Main extends Component {
   onSubmit(e) {
     e.preventDefault() 
     this.setState({loading: true})
-    axios({
+    fetch({
       url:'http://localhost:9000/',
       method:"POST",
       headers: {
@@ -68,7 +68,7 @@ class Main extends Component {
   handleStart(e) {
     e.preventDefault()
     this.setState({loading: true})
-    axios({
+    fetch({
       url:'http://localhost:9000/',
       method:"POST",
       headers: {'Content-Type':'application/x-www-form-urlencoded', "Accept" : "application/json"},

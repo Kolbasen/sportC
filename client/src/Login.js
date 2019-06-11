@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
-import axios from "axios";
 import qs from 'qs'
-import {getJWT, setJWT, confirmJWT, removeJWT} from "./tokenHelpers"
-import {Redirect, Link} from 'react-router-dom'
+import { getJWT, setJWT } from "./tokenHelpers"
+import { Redirect, Link } from 'react-router-dom'
 
 class Login extends Component {
   constructor(props) {
@@ -24,7 +23,7 @@ handleSubmit(e) {
     login: this.state.login,
     passwd: this.state.passwd
   } 
-  axios({
+  fetch({
     method: 'post',
     url: 'http://localhost:9000/auth',
     headers: {'Content-Type':'application/x-www-form-urlencoded', "Accept" : "application/json"},
